@@ -1,0 +1,6 @@
+native/build/
+native/build-mpi/
+*.o
+*.exe
+*.tar.gz
+node_modules/
