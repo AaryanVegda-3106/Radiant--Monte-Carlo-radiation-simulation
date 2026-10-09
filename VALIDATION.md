@@ -33,3 +33,7 @@ Inputs: seed 42, slab 10 cm, cross section 0.35 cm⁻¹, absorption 0.25, energy
 - Final browser guided sweep completed all 27 runs; native import accepted all nine measurements. Browser export is preserved in browser-and-native-measurements.json. No browser console errors were reported. At 1M histories, browser medians were 0.4209 s (one worker) and 0.1274 s (four workers), a measured 3.30× speedup. At 10K histories, four workers were slower than one, demonstrating startup overhead.
 
 
+
+## Animation update · 9 October 2026
+
+Expanded the bounded visualization sample to 384 histories. Seven transport tests still pass. Checked the new copper and X-ray presets in the browser with 100,000 histories: 1,062 transmitted, 84,367 absorbed, 14,571 reflected, 116,864 scattering events, and no capped histories. Dense sampled playback and pause controls worked without reported browser console errors. New beam choices remain explicitly labelled energy/color presets for the common teaching model.

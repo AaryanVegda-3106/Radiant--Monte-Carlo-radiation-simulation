@@ -1,6 +1,6 @@
 # RADIANT · Monte Carlo Transport Lab
 
-A working educational simulator, styled from the supplied dark RADIANT dashboard reference. All requested histories are calculated; visualization keeps only history IDs 0–95. Browser sequential and multicore runs use one or several dedicated Web Workers. The C++ engine supports actual OpenMP and optional MPI.
+A working educational simulator, styled from the supplied dark RADIANT dashboard reference. All requested histories are calculated; visualization keeps only history IDs 0–383. Browser sequential and multicore runs use one or several dedicated Web Workers. The C++ engine supports actual OpenMP and optional MPI.
 
 ## Run the dashboard
 
@@ -57,7 +57,7 @@ For strong scaling, compare the same N, seed and physics using the same compiler
 - Safety cap: 10,000 collisions/history. Capped energy is retained as residual. `incident = deposited + escaped + residual`.
 - A hashed `(uint32 seed, global history ID)` initializes xorshift32. Both implementations use the same integer operations. Scheduling does not change a history's stream. Floating-point library and compiler differences can occasionally alter boundary decisions. Floating sums are order-dependent. This RNG is educational, not a certified large-scale independent-stream generator.
 - Browser work units contain 4,096 histories. Exported checkpoints contain aggregate tallies and completed chunk IDs. Checkpoints are not cryptographically authenticated. Import clears historical visualization samples; only newly calculated sample IDs will be displayed after resumption.
-- Visualization offsets the 96 sample sources to separate paths. The physics uses a pencil beam. The heatmap projects x/y; transverse positions beyond ±L/2 collect at edge rows. Paths are clipped to the viewport and capped at 256 displayed vertices. Numerical tallies continue after the displayed path limit.
+- Visualization offsets the 384 sample sources to separate paths. The physics uses a pencil beam. The heatmap projects x/y; transverse positions beyond ±L/2 collect at edge rows. Paths are clipped to the viewport and capped at 256 displayed vertices. Numerical tallies continue after the displayed path limit.
 - Presets (concrete/water/lead) are illustrative coefficients, not sourced material data. Energy does not change coefficients. There are no secondaries, energy-dependent cross sections, Compton scattering, dose estimates, variance reduction, GPU kernels or production cross-section libraries.
 
 Method references: [OpenMC free-flight sampling](https://docs.openmc.org/en/v0.11.0/methods/neutron_physics.html), [MPI timing](https://docs.open-mpi.org/en/v5.0.6/man-openmpi/man3/MPI_Wtime.3.html), [MPI reductions](https://docs.open-mpi.org/en/v5.0.8/man-openmpi/man3/MPI_Reduce.3.html).
@@ -84,4 +84,11 @@ For the MinGW installation on this Windows PC, `powershell -File native/build-wi
 
 
 Resource metrics in grouped rows come from the last repeat; runtime is the median and the range is shown. Short native runs can report slightly above 100% normalized CPU activity because OS CPU accounting has coarser resolution than elapsed time. Longer repeated runs reduce this effect.
+
+
+## Animation and expanded presets
+
+The visualizer loops up to 384 actual sampled histories with moving heads, fading tails and collision rings. Choose 96, 192 or 384 visible histories, playback speed (0.25–4×), path guides, or pause. Replaying paths never increments transport tallies. Playback timing, source spreading and exit extensions are visual only. Reduced-motion preferences start in a static mode.
+
+Material presets: concrete, water, lead, aluminum, steel, copper, tungsten, graphite, polyethylene, air and vacuum, plus a custom medium. All non-vacuum coefficients are illustrative. Beam presets: neutral test particle, gamma photon surrogate, X-ray photon surrogate, fast neutron and low-energy neutron. Beam presets set energy and color; they do not add species-specific collision physics or energy-dependent cross sections.
 

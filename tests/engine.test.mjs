@@ -1,10 +1,10 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {chunk,empty,merge,rng,validate} from '../dist/engine.js';
+import {chunk,empty,merge,rng,validate,MAX_TRACKS} from '../dist/engine.js';
 const p={n:100000,seed:42,thickness:10,sigma:.35,absorb:.25,energy:1};
 test('vacuum transmits every particle without collision',()=>{const r=chunk({...p,sigma:0},0,1000);assert.equal(r.transmitted,1000);assert.equal(r.collisions,0);assert.equal(r.path,10000);});
 test('pure absorption agrees with Beer-Lambert within five standard errors',()=>{const r=chunk({...p,absorb:1},0,p.n),q=Math.exp(-p.sigma*p.thickness),se=Math.sqrt(q*(1-q)/p.n);assert.ok(Math.abs(r.transmitted/p.n-q)<5*se);assert.equal(r.reflected,0);assert.equal(r.scatter,0);});
-test('exclusive outcomes, energy conservation and all-history tally',()=>{const r=chunk(p,0,p.n);assert.equal(r.transmitted+r.absorbed+r.reflected+r.capped,p.n);assert.equal(r.escaped+r.deposited+r.residual,p.n*p.energy);assert.equal(r.depth.reduce((a,b)=>a+b),r.collisions);assert.equal(r.heat.reduce((a,b)=>a+b),r.deposited);assert.equal(r.tracks.length,96);});
+test('exclusive outcomes, energy conservation and all-history tally',()=>{const r=chunk(p,0,p.n);assert.equal(r.transmitted+r.absorbed+r.reflected+r.capped,p.n);assert.equal(r.escaped+r.deposited+r.residual,p.n*p.energy);assert.equal(r.depth.reduce((a,b)=>a+b),r.collisions);assert.equal(r.heat.reduce((a,b)=>a+b),r.deposited);assert.equal(r.tracks.length,MAX_TRACKS);});
 test('partitioning and reordered completion preserve integer tallies',()=>{const one=chunk(p,0,12000),split=empty();merge(split,chunk(p,8000,12000));merge(split,chunk(p,0,4000));merge(split,chunk(p,4000,8000));for(const k of ['transmitted','absorbed','reflected','capped','collisions','scatter'])assert.equal(split[k],one[k]);assert.deepEqual(split.depth,one.depth);assert.deepEqual(split.heat,one.heat);assert.ok(Math.abs(split.path-one.path)<1e-7);});
 test('RNG is deterministic, open interval, seed-sensitive',()=>{const a=rng(42,5),b=rng(42,5),c=rng(43,5);const first=a();assert.equal(first,b());assert.notEqual(first,c());for(let i=0;i<10000;i++){const v=a();assert.equal(v,b());assert.ok(v>0&&v<1);}});
 test('invalid and non-finite controls are rejected',()=>{for(const patch of [{n:0},{n:1.5},{seed:-1},{sigma:NaN},{absorb:1.1},{thickness:0}])assert.throws(()=>validate({...p,...patch}));});
